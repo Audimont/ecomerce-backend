@@ -10,8 +10,8 @@ export class UsersService {
   constructor(
     private readonly entityManager: EntityManager,
     @InjectRepository(User)
-    private repository: Repository<User>
-  ) { }
+    private repository: Repository<User>,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     const createdUser = await this.repository.save(createUserDto);
@@ -23,12 +23,15 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    return this.repository.findOneBy({ id })
+    return this.repository.findOneBy({ id });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.repository.findOneByOrFail({ id });
-    const updatedUser = await this.repository.save({ ...user, ...updateUserDto });
+    const updatedUser = await this.repository.save({
+      ...user,
+      ...updateUserDto,
+    });
     return updatedUser;
   }
 
