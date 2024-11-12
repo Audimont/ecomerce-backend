@@ -2,13 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly entityManager: EntityManager,
     @InjectRepository(User)
     private repository: Repository<User>,
   ) {}
@@ -24,6 +23,10 @@ export class UsersService {
 
   async findOne(id: number) {
     return this.repository.findOneBy({ id });
+  }
+
+  async findOneByEmail(email: string) {
+    return this.repository.findOneBy({ email });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
