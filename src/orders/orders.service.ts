@@ -1,25 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Product } from 'src/products/entities/product.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
-import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderItem } from './entities/order-item.entity';
 import { Order } from './entities/order.entity';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
 export class OrdersService {
   constructor(
-    @InjectRepository(Order) private ordersRepository: Repository<Order>,
-    @InjectRepository(Product) private productsRepository: Repository<Product>,
-    @InjectRepository(User) private usersRepository: Repository<User>,
+    @InjectRepository(Order)
+    private readonly ordersRepository: Repository<Order>,
+    @InjectRepository(Product)
+    private readonly productsRepository: Repository<Product>,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
   ) {}
 
   async createOrder(createOrderDto: CreateOrderDto): Promise<Order> {
     const { userId, items } = createOrderDto;
-    const user = await this.usersRepository.findOneOrFail({
-      where: { id: userId },
-    });
+
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
 
     let totalPrice = 0;
     const orderItems: OrderItem[] = [];
@@ -28,8 +33,12 @@ export class OrdersService {
       const product = await this.productsRepository.findOne({
         where: { id: item.productId },
       });
+
       if (!product) {
-        throw new Error('Product not available');
+        throw new HttpException(
+          `Product with ID ${item.productId} not available`,
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       const orderItem = new OrderItem();

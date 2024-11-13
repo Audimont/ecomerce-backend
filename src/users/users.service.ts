@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,24 +13,44 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    const existingUser = await this.repository.findOneBy({
+      email: createUserDto.email,
+    });
+    if (existingUser) {
+      throw new HttpException(
+        'User with this email already exists',
+        HttpStatus.CONFLICT,
+      );
+    }
     const createdUser = await this.repository.save(createUserDto);
     return createdUser;
   }
 
   async findAll() {
-    return this.repository.find();
+    return await this.repository.find();
   }
 
   async findOne(id: number) {
-    return this.repository.findOneBy({ id });
+    const user = await this.repository.findOneBy({ id });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    return user;
   }
 
   async findOneByEmail(email: string) {
-    return this.repository.findOneBy({ email });
+    const user = await this.repository.findOneBy({ email });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.repository.findOneByOrFail({ id });
+    const user = await this.repository.findOneBy({ id });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
     const updatedUser = await this.repository.save({
       ...user,
       ...updateUserDto,
@@ -39,6 +59,10 @@ export class UsersService {
   }
 
   async remove(id: number) {
-    return this.repository.delete({ id });
+    const result = await this.repository.delete({ id });
+    if (result.affected === 0) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    return { message: 'User deleted successfully' };
   }
 }
