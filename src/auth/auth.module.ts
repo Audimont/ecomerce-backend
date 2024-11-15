@@ -6,8 +6,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshToken } from './entities/refresh-tokens.entity';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './strategies/local.stategy';
 @Module({
   imports: [
+    PassportModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow('JWT_SECRET'),
@@ -18,6 +21,6 @@ import { RefreshToken } from './entities/refresh-tokens.entity';
     TypeOrmModule.forFeature([RefreshToken]),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, LocalStrategy],
 })
 export class AuthModule {}

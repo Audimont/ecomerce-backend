@@ -47,6 +47,18 @@ export class UsersService {
     return user;
   }
 
+  async findOneByEmail(email: string) {
+    const user = await this.repository.findOne({
+      where: { email },
+      select: ['id', 'name', 'email', 'password'],
+    });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    console.log('Result of findOneByEmail:', user);
+    return user;
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.repository.findOneBy({ id });
 
@@ -73,26 +85,5 @@ export class UsersService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
     return { message: 'User deleted successfully' };
-  }
-
-  async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.repository.findOne({
-      where: { email },
-      select: ['id', 'email', 'password'],
-    });
-
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-
-    const isPasswordValid = await this.passwordService.comparePassword(
-      password,
-      user.password,
-    );
-    if (!isPasswordValid) {
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
-    }
-
-    return user;
   }
 }
