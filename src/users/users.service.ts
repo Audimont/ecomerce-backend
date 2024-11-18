@@ -47,6 +47,10 @@ export class UsersService {
     return user;
   }
 
+  async findOneForAuth(id: number) {
+    return this.repository.findOneBy({ id });
+  }
+
   async findOneByEmail(email: string) {
     const user = await this.repository.findOne({
       where: { email },
@@ -55,7 +59,6 @@ export class UsersService {
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    console.log('Result of findOneByEmail:', user);
     return user;
   }
 

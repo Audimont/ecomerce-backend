@@ -7,7 +7,9 @@ import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshToken } from './entities/refresh-tokens.entity';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './strategies/local.stategy';
+import { LocalStrategy } from './strategies/local.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
+
 @Module({
   imports: [
     PassportModule,
@@ -21,6 +23,6 @@ import { LocalStrategy } from './strategies/local.stategy';
     TypeOrmModule.forFeature([RefreshToken]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
 })
 export class AuthModule {}
