@@ -11,7 +11,10 @@ async function bootstrap() {
     logger: ['error', 'warn', 'log'],
   });
   app.use(helmet());
-  app.enableCors();
+  app.enableCors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -22,6 +25,6 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.use(cookieParser());
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 4000);
 }
 bootstrap();
