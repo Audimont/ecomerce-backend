@@ -23,6 +23,9 @@ export class User {
   @Column({ select: false })
   password: string;
 
+  @Column({ default: false })
+  isVerified: boolean;
+
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
 
