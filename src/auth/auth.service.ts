@@ -30,18 +30,37 @@ export class AuthService {
         ),
     );
 
+    const expiresRefreshCookie = new Date(
+      Date.now() +
+        parseInt(
+          this.configService.getOrThrow<string>('JWT_REFRESH_EXPIRATION'),
+        ),
+    );
+
     const tokenPayload: TokenPayload = {
       id: user.id,
       email: user.email,
     };
 
     const accessToken = this.jwtService.sign(tokenPayload, {
+      secret: this.configService.getOrThrow('JWT_ACCESS_SECRET'),
       expiresIn: `${this.configService.getOrThrow('JWT_ACCESS_EXPIRATION')}ms`,
     });
 
+    const refreshToken = this.jwtService.sign(tokenPayload, {
+      secret: this.configService.getOrThrow('JWT_REFRESH_SECRET'),
+      expiresIn: `${this.configService.getOrThrow('JWT_REFRESH_EXPIRATION')}ms`,
+    });
+
+    const hasRefreshToken =
+      await this.passwordService.hashPassword(refreshToken);
+    await this.userService.update(user.id, { refreshToken: hasRefreshToken });
+
     return {
-      access_token: accessToken,
-      expires_in: expiresAccessCookie,
+      accessToken,
+      refreshToken,
+      expiresAccessCookie,
+      expiresRefreshCookie,
     };
   }
 
@@ -56,6 +75,25 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
+    return user;
+  }
+
+  async verifyRefreshToken(refreshToken: string, userId: number) {
+    const user = await this.userService.findOneForAuth(userId);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid user');
+    }
+
+    const isRefreshTokenValid = await this.passwordService.comparePassword(
+      refreshToken,
+      user.refreshToken,
+    );
+
+    if (!isRefreshTokenValid) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
     return user;
   }
 }

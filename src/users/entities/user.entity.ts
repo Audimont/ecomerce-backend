@@ -1,4 +1,3 @@
-import { RefreshToken } from 'src/auth/entities/refresh-tokens.entity';
 import { Order } from 'src/orders/entities/order.entity';
 import {
   Column,
@@ -27,8 +26,8 @@ export class User {
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
 
-  @OneToOne(() => RefreshToken, (refreshToken) => refreshToken.user)
-  refreshToken: RefreshToken;
+  @Column({ nullable: true })
+  refreshToken: string;
 
   @CreateDateColumn()
   createdAt: Date;

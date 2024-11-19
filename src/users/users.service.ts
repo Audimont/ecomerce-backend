@@ -75,11 +75,10 @@ export class UsersService {
       );
     }
 
-    const updatedUser = await this.repository.save({
+    await this.repository.save({
       ...user,
       ...updateUserDto,
     });
-    return updatedUser;
   }
 
   async remove(id: number) {

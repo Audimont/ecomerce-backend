@@ -10,10 +10,11 @@ import {
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { LocalGuard } from 'src/auth/guards/local.guard';
-import { CurrentUser } from './current-user.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { Response } from 'express';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -25,7 +26,6 @@ export class AuthController {
   }
 
   @Post('login')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(LocalGuard)
   async login(
     @CurrentUser() user: User,
@@ -33,12 +33,42 @@ export class AuthController {
   ) {
     const loginData = await this.authService.login(user);
 
-    res.cookie('Authentication', loginData.access_token, {
+    res.cookie('Authentication', loginData.accessToken, {
       httpOnly: true,
-      expires: loginData.expires_in,
+      // secure: true,
+      expires: loginData.expiresAccessCookie,
+    });
+
+    res.cookie('Refresh', loginData.refreshToken, {
+      httpOnly: true,
+      // secure: true,
+      expires: loginData.expiresRefreshCookie,
     });
 
     return { message: 'Login successful' };
+  }
+
+  @Post('refresh')
+  @UseGuards(JwtRefreshAuthGuard)
+  async refresh(
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const loginData = await this.authService.login(user);
+
+    res.cookie('Authentication', loginData.accessToken, {
+      httpOnly: true,
+      // secure: true,
+      expires: loginData.expiresAccessCookie,
+    });
+
+    res.cookie('Refresh', loginData.refreshToken, {
+      httpOnly: true,
+      // secure: true,
+      expires: loginData.expiresRefreshCookie,
+    });
+
+    return { message: 'Refresh successful' };
   }
 
   @Post('logout')
