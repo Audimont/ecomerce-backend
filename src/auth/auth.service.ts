@@ -6,6 +6,7 @@ import { User } from 'src/users/entities/user.entity';
 import { PasswordService } from 'src/users/password.service';
 import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './interfaces/token-payload';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -14,11 +15,13 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
   ) {}
 
   async signup(signupDto: CreateUserDto): Promise<User> {
     const user = await this.userService.create(signupDto);
     const userWithoutPassword = { ...user, password: undefined };
+    await this.emailService.VerificationEmail(user);
     return userWithoutPassword;
   }
 
@@ -40,6 +43,7 @@ export class AuthService {
     const tokenPayload: TokenPayload = {
       id: user.id,
       email: user.email,
+      isVerified: user.isVerified,
     };
 
     const accessToken = this.jwtService.sign(tokenPayload, {

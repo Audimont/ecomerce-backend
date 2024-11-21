@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MinLength,
@@ -22,4 +23,8 @@ export class CreateUserDto {
       'Password must contain at least one number, one lowercase letter, and one uppercase letter',
   })
   password: string;
+
+  @IsString()
+  @IsOptional()
+  emailVerificationToken: string;
 }

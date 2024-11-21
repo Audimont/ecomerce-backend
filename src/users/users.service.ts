@@ -54,7 +54,7 @@ export class UsersService {
   async findOneByEmail(email: string) {
     const user = await this.repository.findOne({
       where: { email },
-      select: ['id', 'name', 'email', 'password'],
+      select: ['id', 'name', 'email', 'isVerified'],
     });
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);

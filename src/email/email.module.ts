@@ -1,25 +1,24 @@
 import { Module } from '@nestjs/common';
-import { MailgunModule } from 'nestjs-mailgun';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
+import { ResendModule } from 'nestjs-resend';
+import { EmailController } from './email.controller';
 import { EmailService } from './email.service';
+import { JwtModule } from '@nestjs/jwt';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    MailgunModule.forAsyncRoot({
-      imports: [ConfigModule],
+    ResendModule.forRootAsync({
       useFactory: async (configService: ConfigService) => ({
-        username: 'api',
-        key: configService.get<string>('MAILGUN_API_KEY'),
-        url: configService.get<string>(
-          'MAILGUN_API_URL',
-          'https://api.mailgun.net',
-        ),
+        apiKey: configService.getOrThrow('RESEND_API_KEY'),
       }),
       inject: [ConfigService],
     }),
+    JwtModule,
+    UsersModule,
   ],
   providers: [EmailService],
   exports: [EmailService],
+  controllers: [EmailController],
 })
 export class EmailModule {}
