@@ -21,7 +21,7 @@ export class AuthService {
   async signup(signupDto: CreateUserDto): Promise<User> {
     const user = await this.userService.create(signupDto);
     const userWithoutPassword = { ...user, password: undefined };
-    await this.emailService.VerificationEmail(user);
+    await this.emailService.sendVerificationEmail(user);
     return userWithoutPassword;
   }
 

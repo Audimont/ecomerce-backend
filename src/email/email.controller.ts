@@ -1,19 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
-import { ResendService } from 'nestjs-resend';
+import { Controller, Get, Query, Post, Body } from '@nestjs/common';
+import { EmailService } from './email.service';
 
 @Controller('email')
 export class EmailController {
-  constructor(private readonly resendService: ResendService) {}
+  constructor(private readonly emailService: EmailService) {}
 
   @Get()
-  async sendVerificationEmail() {
-    const result = await this.resendService.emails.send({
-      from: 'onboarding@resend.dev',
-      to: 'desarrolloaudimont@gmail.com',
-      subject: 'Hello from NestJS',
-      html: '<p>This email was sent using Resend and NestJS!</p>',
-    });
+  async verifyEmail(@Query('token') token: string) {
+    return await this.emailService.verifyEmail(token);
+  }
 
-    return result;
+  @Post()
+  async resendVerificationEmail(@Body('email') email: string) {
+    return await this.emailService.resendVerificationEmail(email);
   }
 }

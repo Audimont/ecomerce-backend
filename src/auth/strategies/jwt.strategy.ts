@@ -24,7 +24,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.usersService.findOneForAuth(payload.id);
 
     if (!user) {
-      throw new UnauthorizedException('User is not active');
+      throw new UnauthorizedException('User not found.');
+    }
+
+    if (!user.isVerified) {
+      throw new UnauthorizedException(
+        'Email not verified. Please verify your email to access this resource.',
+      );
     }
 
     return user;

@@ -26,9 +26,6 @@ export class User {
   @Column({ default: false })
   isVerified: boolean;
 
-  @Column({ nullable: true })
-  emailVerificationToken: string;
-
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
 

@@ -24,7 +24,7 @@ export class CreateUserDto {
   })
   password: string;
 
-  @IsString()
   @IsOptional()
-  emailVerificationToken: string;
+  @IsString()
+  isVerified: boolean;
 }
