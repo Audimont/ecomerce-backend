@@ -1,5 +1,5 @@
-import { Transform } from "class-transformer";
-import { IsNumber, IsString } from "class-validator";
+import { Transform } from 'class-transformer';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -7,7 +7,7 @@ export class CreateProductDto {
 
   @IsString()
   description: string;
-  
+
   @Transform(({ value }) => parseFloat(value))
   @IsNumber({ maxDecimalPlaces: 2 })
   price: number;

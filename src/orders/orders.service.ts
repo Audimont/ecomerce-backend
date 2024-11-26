@@ -18,6 +18,12 @@ export class OrdersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
+  async getOrders(): Promise<Order[]> {
+    return await this.ordersRepository.find({
+      relations: ['user', 'items', 'items.product'],
+    });
+  }
+
   async createOrder(createOrderDto: CreateOrderDto): Promise<Order> {
     const { userId, items } = createOrderDto;
 
