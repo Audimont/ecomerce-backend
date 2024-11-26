@@ -1,12 +1,12 @@
 import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { LocalGuard } from 'src/auth/guards/local.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { User } from 'src/users/entities/user.entity';
 import { Response } from 'express';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
+import { CreateUserDto } from '@users/dto/create-user.dto';
+import { LocalGuard } from './guards/local.guard';
+import { User } from '@users/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
