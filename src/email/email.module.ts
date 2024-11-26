@@ -4,7 +4,7 @@ import { ResendModule } from 'nestjs-resend';
 import { EmailController } from './email.controller';
 import { EmailService } from './email.service';
 import { JwtModule } from '@nestjs/jwt';
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from '@users/users.module';
 
 @Module({
   imports: [

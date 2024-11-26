@@ -81,6 +81,16 @@
     "testRegex": ".*\\.spec\\.ts$",
     "collectCoverageFrom": ["src/**/*.(t|j)s"],
     "coverageDirectory": "coverage",
-    "testPathIgnorePatterns": ["/node_modules/"]
+    "testPathIgnorePatterns": ["/node_modules/"],
+    "moduleNameMapper": {
+      "^@common/(.*)$": "<rootDir>/src/common/$1",
+      "^@products/(.*)$": "<rootDir>/src/products/$1",
+      "^@users/(.*)$": "<rootDir>/src/users/$1",
+      "^@orders/(.*)$": "<rootDir>/src/orders/$1",
+      "^@auth/(.*)$": "<rootDir>/src/auth/$1",
+      "^@email/(.*)$": "<rootDir>/src/email/$1",
+      "^@config/(.*)$": "<rootDir>/src/config/$1",
+      "^@utils/(.*)$": "<rootDir>/src/utils/$1"
+    }
   }
 }

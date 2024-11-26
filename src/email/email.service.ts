@@ -5,9 +5,9 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@users/entities/user.entity';
+import { UsersService } from '@users/users.service';
 import { ResendService } from 'nestjs-resend';
-import { User } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class EmailService {
