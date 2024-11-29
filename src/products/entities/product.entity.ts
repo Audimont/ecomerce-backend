@@ -20,13 +20,16 @@ export class Product {
   @Column({ type: 'decimal' })
   price: number;
 
+  @Column({ default: false })
+  installable: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
-  constructor(user: Partial<Product>) {
-    Object.assign(this, user);
+  constructor(product: Partial<Product>) {
+    Object.assign(this, product);
   }
 }
