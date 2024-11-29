@@ -1,4 +1,10 @@
-import { IsInt, IsArray, IsNotEmpty } from 'class-validator';
+import {
+  IsInt,
+  IsArray,
+  IsNotEmpty,
+  IsBoolean,
+  IsNumber,
+} from 'class-validator';
 
 export class CreateOrderItemDto {
   @IsInt()
@@ -6,6 +12,12 @@ export class CreateOrderItemDto {
 
   @IsInt()
   quantity: number;
+
+  @IsBoolean()
+  installationRequested?: boolean;
+
+  @IsNumber()
+  installationSlotId?: number;
 }
 
 export class CreateOrderDto {

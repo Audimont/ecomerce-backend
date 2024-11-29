@@ -1,14 +1,28 @@
-import { Controller, Post, Body, Inject, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { PaginationDto } from '@common/dto/pagination.dto';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Get()
-  async getOrders() {
-    return await this.ordersService.getOrders();
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async getOrders(@Query() PaginationDto: PaginationDto) {
+    const options = {
+      page: PaginationDto.page,
+      limit: PaginationDto.limit,
+    };
+    return await this.ordersService.getOrders(options);
   }
 
   @Post()

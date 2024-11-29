@@ -36,6 +36,7 @@
     "helmet": "^8.0.0",
     "nestjs-mailgun": "^4.0.3",
     "nestjs-resend": "^1.0.1",
+    "nestjs-typeorm-paginate": "^4.0.4",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
@@ -74,14 +75,22 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "moduleFileExtensions": ["ts", "js", "json"],
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
     "transform": {
       "^.+\\.ts$": "ts-jest"
     },
     "testRegex": ".*\\.spec\\.ts$",
-    "collectCoverageFrom": ["src/**/*.(t|j)s"],
+    "collectCoverageFrom": [
+      "src/**/*.(t|j)s"
+    ],
     "coverageDirectory": "coverage",
-    "testPathIgnorePatterns": ["/node_modules/"],
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
     "moduleNameMapper": {
       "^@common/(.*)$": "<rootDir>/src/common/$1",
       "^@products/(.*)$": "<rootDir>/src/products/$1",
