@@ -35,6 +35,14 @@ export class OrdersService {
     });
   }
 
+  async getOrdersByUser(userId: number, options: IPaginationOptions) {
+    return paginate<Order>(this.ordersRepository, options, {
+      relations: ['user', 'items', 'items.product', 'items.installationSlot'],
+      where: { user: { id: userId } },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async createOrder(createOrderDto: CreateOrderDto): Promise<Order> {
     return await this.dataSource.transaction(async (manager) => {
       const { userId, items } = createOrderDto;
