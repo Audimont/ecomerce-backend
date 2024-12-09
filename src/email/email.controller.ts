@@ -5,12 +5,17 @@ import { EmailService } from './email.service';
 export class EmailController {
   constructor(private readonly emailService: EmailService) {}
 
-  @Get()
+  @Get('verify-email')
   async verifyEmail(@Query('token') token: string) {
     return await this.emailService.verifyEmail(token);
   }
 
-  @Post()
+  @Post('password-reset-request')
+  async passwordResetRequest(@Body('email') email: string) {
+    return this.emailService.sendPasswordResetEmail(email);
+  }
+
+  @Post('resend-verification-email')
   async resendVerificationEmail(@Body('email') email: string) {
     return await this.emailService.resendVerificationEmail(email);
   }

@@ -7,6 +7,7 @@ import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 import { CreateUserDto } from '@users/dto/create-user.dto';
 import { LocalGuard } from './guards/local.guard';
 import { User } from '@users/entities/user.entity';
+import { PasswordResetDto } from './dto/password-reset.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -61,6 +62,11 @@ export class AuthController {
     });
 
     return { message: 'Refresh successful' };
+  }
+
+  @Post('password-reset')
+  async passwordReset(@Body() passwordResetDto: PasswordResetDto) {
+    return this.authService.passwordReset(passwordResetDto);
   }
 
   @Post('logout')

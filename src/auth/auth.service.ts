@@ -7,6 +7,7 @@ import { PasswordService } from '@users/password.service';
 import { User } from '@users/entities/user.entity';
 import { CreateUserDto } from '@users/dto/create-user.dto';
 import { UsersService } from '@users/users.service';
+import { PasswordResetDto } from './dto/password-reset.dto';
 
 @Injectable()
 export class AuthService {
@@ -99,5 +100,27 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async passwordReset(passwordResetDto: PasswordResetDto) {
+    const payload = this.jwtService.verify(passwordResetDto.token, {
+      secret: this.configService.getOrThrow('JWT_EMAIL_SECRET'),
+    });
+
+    if (!payload) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    const user = await this.userService.findOneByEmail(payload.email);
+
+    if (!user.isVerified) {
+      throw new UnauthorizedException('Email not verified');
+    }
+
+    await this.userService.update(user.id, {
+      password: passwordResetDto.password,
+    });
+
+    return { message: 'Password reset successful' };
   }
 }

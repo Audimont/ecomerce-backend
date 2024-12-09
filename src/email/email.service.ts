@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -11,9 +12,12 @@ import { ResendService } from 'nestjs-resend';
 
 @Injectable()
 export class EmailService {
-  private readonly email: string = 'onboarding@resend.dev';
-  private readonly verificationUrl: string =
-    'http://localhost:4000/email?token=';
+  private readonly email: string =
+    this.configService.getOrThrow('EMAIL_SENDER');
+  private readonly backendUrl: string =
+    this.configService.getOrThrow('BACKEND_URL');
+  private readonly frontendUrl: string =
+    this.configService.getOrThrow('FRONTEND_URL');
   private readonly secret: string =
     this.configService.getOrThrow('JWT_EMAIL_SECRET');
 
@@ -34,7 +38,7 @@ export class EmailService {
         },
       );
 
-      const verificationUrl = `${this.verificationUrl}${token}`;
+      const verificationUrl = `${this.backendUrl}/email/verify-email?token=${token}`;
       await this.resendService.emails.send({
         from: this.email,
         to: user.email,
@@ -85,5 +89,36 @@ export class EmailService {
 
     await this.sendVerificationEmail(user);
     return { message: 'Verification email resent successfully.' };
+  }
+
+  async sendPasswordResetEmail(email: string) {
+    const user = await this.usersService.findOneByEmail(email);
+
+    if (!user.isVerified) {
+      throw new UnauthorizedException('Email is not verified.');
+    }
+
+    try {
+      const token = this.jwtService.sign(
+        { email: user.email },
+        {
+          secret: this.secret,
+          expiresIn: '30m',
+        },
+      );
+
+      const resetUrl = `${this.frontendUrl}/auth/password-reset?token=${token}`;
+      await this.resendService.emails.send({
+        from: this.email,
+        to: user.email,
+        subject: 'Change your password',
+        text: `Click to change your password: ${resetUrl}`,
+      });
+
+      return { message: 'Password reset email sent successfully.' };
+    } catch (error) {
+      console.error('Error sending verification email:', error);
+      throw new BadRequestException('Failed to send verification email.');
+    }
   }
 }
