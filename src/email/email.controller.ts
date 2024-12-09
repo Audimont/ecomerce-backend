@@ -1,12 +1,12 @@
-import { Controller, Get, Query, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import { EmailService } from './email.service';
 
 @Controller('email')
 export class EmailController {
   constructor(private readonly emailService: EmailService) {}
 
-  @Get('verify-email')
-  async verifyEmail(@Query('token') token: string) {
+  @Post('verify-email')
+  async verifyEmail(@Body('token') token: string) {
     return await this.emailService.verifyEmail(token);
   }
 

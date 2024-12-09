@@ -14,8 +14,6 @@ import { ResendService } from 'nestjs-resend';
 export class EmailService {
   private readonly email: string =
     this.configService.getOrThrow('EMAIL_SENDER');
-  private readonly backendUrl: string =
-    this.configService.getOrThrow('BACKEND_URL');
   private readonly frontendUrl: string =
     this.configService.getOrThrow('FRONTEND_URL');
   private readonly secret: string =
@@ -38,7 +36,7 @@ export class EmailService {
         },
       );
 
-      const verificationUrl = `${this.backendUrl}/email/verify-email?token=${token}`;
+      const verificationUrl = `${this.frontendUrl}/auth/verify-email?token=${token}`;
       await this.resendService.emails.send({
         from: this.email,
         to: user.email,
